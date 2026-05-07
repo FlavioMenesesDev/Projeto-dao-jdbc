@@ -31,7 +31,15 @@ public class Program {
 
         System.out.println("\n=== TESTE 4: seller insert =====");
         LocalDate birthDate = LocalDate.parse("2004-12-11");
-        Seller sellerInsert = sellerDao.insert(new Seller(null, "Flávio", "flavio@gmail.com", birthDate, 1620.0, department));
-        System.out.println(sellerInsert);
+        //Seller sellerInsert = sellerDao.insert(new Seller(null, "Flávio", "flavio@gmail.com", birthDate, 1620.0, department));
+        //System.out.println(sellerInsert);
+
+        System.out.println("\n=== TESTE 5: seller update =====");
+        seller = sellerDao.findById(9);
+        seller.setName("Flávio Meneses");
+        sellerDao.update(seller);
+
+        System.out.println("\n=== TESTE 6: seller deleteById =====");
+        //sellerDao.deleteById(11);
     }
 }

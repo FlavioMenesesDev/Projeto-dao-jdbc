@@ -26,9 +26,9 @@ public class SellerDaoJDBC implements SellerDao {
         PreparedStatement st = null;
 
         try {
-            st = conn.prepareStatement("INSERT INTO seller\n" +
-                    "(Name, Email, BirthDate, BaseSalary, DepartmentId)\n" +
-                    "VALUES\n" +
+            st = conn.prepareStatement("INSERT INTO seller " +
+                    "(Name, Email, BirthDate, BaseSalary, DepartmentId) " +
+                    "VALUES " +
                     "(?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS);
 
@@ -47,6 +47,7 @@ public class SellerDaoJDBC implements SellerDao {
                     obj.setId(id);
                 }
                 DB.closeResultSet(rs);
+                return obj;
             }
             else{
                 throw new DbException("Erro! Nenhuma linha afetada");
@@ -57,17 +58,66 @@ public class SellerDaoJDBC implements SellerDao {
         finally {
             DB.closeStatement(st);
         }
-        return obj;
     }
 
     @Override
     public void update(Seller obj) {
 
+        PreparedStatement st = null;
+
+        try {
+            st = conn.prepareStatement("UPDATE seller " +
+                            "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? " +
+                            "WHERE seller.Id = ?");
+
+            st.setString(1, obj.getName());
+            st.setString(2, obj.getEmail());
+            st.setObject(3, obj.getBirthDate());
+            st.setDouble(4, obj.getBaseSalary());
+            st.setObject(5, obj.getDepartment().getId());
+            st.setInt(6, obj.getId());
+
+            int linhasAfetadas = st.executeUpdate();
+
+            if (linhasAfetadas > 0){
+                System.out.println("Update " + linhasAfetadas + " Linha Afetadas");
+            }
+            else {
+                throw new DbException("Erro! Nenhuma linha afetada");
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override
     public void deleteById(Integer id) {
-        
+
+        PreparedStatement st = null;
+
+        try {
+            st = conn.prepareStatement("DELETE FROM seller\n" +
+                            "WHERE seller.Id = ? ");
+
+            st.setInt(1, id);
+
+            int linhasAfetadas = st.executeUpdate();
+
+            if (linhasAfetadas > 0){
+                System.out.println("Deletado(s) " + linhasAfetadas + " Linha Afetadas");
+            }
+            else {
+                throw new DbException("Erro! Nenhuma linha afetada");
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override
