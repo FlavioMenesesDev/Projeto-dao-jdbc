@@ -1,17 +1,27 @@
 package Application;
 
+import Model.Dao.DaoFactory;
+import Model.Dao.SellerDao;
 import Model.Entities.Department;
 import Model.Entities.Seller;
 import java.time.LocalDate;
+import java.util.List;
 
 public class Program {
     public static void main(String[] args) {
 
-        Department obj = new Department(1, "books");
+        SellerDao sellerDao = DaoFactory.createSellerDao();
 
-        LocalDate birthDate = LocalDate.of(2004, 12, 11);
-        Seller seller =  new Seller(1, "Flavio", "flavio@gmail.com", birthDate, 1620.0, obj);
-
+        System.out.println("=== TEST 1: seller findById =====");
+        Seller seller = sellerDao.findById(3);
         System.out.println(seller);
+
+        System.out.println("\n=== TEST 2: seller findByDepartment =====");
+        Department department = new Department (2, null);
+        List<Seller> list = sellerDao.findByDepartment(department);
+        for (Seller obj : list) {
+            System.out.println(obj);
+        }
+
     }
 }
