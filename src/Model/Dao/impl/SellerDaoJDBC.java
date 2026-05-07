@@ -6,10 +6,7 @@ import Model.Entities.Seller;
 import db.DB;
 import db.DbException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +21,43 @@ public class SellerDaoJDBC implements SellerDao {
     }
 
     @Override
-    public void insert(Seller obj) {
+    public Seller insert(Seller obj) {
 
+        PreparedStatement st = null;
+
+        try {
+            st = conn.prepareStatement("INSERT INTO seller\n" +
+                    "(Name, Email, BirthDate, BaseSalary, DepartmentId)\n" +
+                    "VALUES\n" +
+                    "(?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+
+            st.setString(1, obj.getName());
+            st.setString(2, obj.getEmail());
+            st.setObject(3, obj.getBirthDate());
+            st.setDouble(4, obj.getBaseSalary());
+            st.setObject(5, obj.getDepartment().getId());
+
+            int linhasAfetadas = st.executeUpdate();
+
+            if (linhasAfetadas > 0){
+                ResultSet rs = st.getGeneratedKeys();
+                if (rs.next()){
+                    int id = rs.getInt(1);
+                    obj.setId(id);
+                }
+                DB.closeResultSet(rs);
+            }
+            else{
+                throw new DbException("Erro! Nenhuma linha afetada");
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
+        return obj;
     }
 
     @Override
@@ -35,7 +67,7 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void deleteById(Integer id) {
-
+        
     }
 
     @Override
